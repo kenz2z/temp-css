@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+    <script>
+    function parseXml(xml_item , accor_handler)
+        {
+            xmlvar = xml_item;
+            var itemCount = 0;
+            var accor_text = "";
+            $(xml_item).find("channel").find("item").each(function()
+            {
+                var idd = $(this).find("pubDate").text().substr(0,10) + "&nbsp;&nbsp; <font style='font-weight:normal;'>" + $(this).find("title").text() + "</font>";
+                var title = "";
+                var details = "";
+        
+                title = "<li>";
+                    title += "<h3>" + idd + "</h3>";
+                    details += "<div class='acc-section'><div class='acc-content' id='item" + itemCount + "'>";
+                        details = details + "<div style='text-align:right; color:#666; font-size:0.9em;'>Share : ";
+                        details = details + "<a href='javascript:void(0);' onClick=\"share('" + customEncodeURIComponent($(this).find("RefNo").text()) + "')\">";
+                        details = details + "<img src='/info/img/icon/icon_facebook.png'  alt='Facebook' width='30' border='0' align='absmiddle'/>";
+                        details = details + "</a>";
+                        details = details + "</div>";
+                        details = details + $(this).find("description").text() ;
+        
+                //2015-02-02 Show IPM attchments
+                //AR
+                var ipmAttachments = "<ul>";
+                $(this).find("AttachmentList").find("Attachment").each(function(){
+                    /*switch($(this).find("DocType").text().toLowerCase())
+                    {
+                        case 'jpg':
+                            ipmAttachments += "<li><a href ='" + $(this).find("DocLink").text() + "'><img src='" + $(this).find("DocLink").text() + "' width='200' height='100'/></a><br/>"+$(this).find("Name").text() +"</li>";
+                            break;
+                        default: ipmAttachments += "<li>" + "<a href='" + $(this).find("DocLink").text() + "'>"+$(this).find("Name").text() +"</a></li>";
+                    }*/
+                    //2016-08-08
+                    var doc_type = $(this).find("DocType").text().toLowerCase();
+                    var img_doc_types = ["jpg", "jpeg", "png", "gif", "bmp"];
+                    if (img_doc_types.indexOf(doc_type) > -1 ) {
+                        ipmAttachments += "<li><a href ='" + $(this).find("DocLink").text() + "'><img src='" + $(this).find("DocLink").text() + "' width='200' height='100'/></a><br/>"+$(this).find("Name").text() +"</li>";
+                    } else {
+                        ipmAttachments += "<li>" + "<a href='" + $(this).find("DocLink").text() + "'>"+$(this).find("Name").text() +"</a></li>";
+                    }
+                });
+                ipmAttachments += "</ul>";
+                details += ipmAttachments;
+        
+                details += "</div></div>";
+                details += "</li>";
+                //title  += "</li>";
+        
+                if( $( "#cat" ).length > 0)
+                {
+                    if($('#cat').val()=="All") { accor_text += title + details; }
+                    else if($(this).find("category").text()==$('#cat').val()) { accor_text += title + details; }
+                }
+                else { accor_text += title + details; }
+        
+                itemCount ++;
+            });
+            accor_text = '<ul class="acc" id="acc">' + accor_text + '</ul>';
+            //console.log("accor_text:" + accor_text);
+            $("#accordion").html(accor_text);
+            accor_handler.init("acc","h3",0,0);
+        }</script>
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    
+</body>
+</html>
